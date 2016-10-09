@@ -1,0 +1,26 @@
+dmenux // dynamic menu extended
+==============================
+dmenux is a fork of dmenu - an efficient dynamic menu for X, patched with XFT, quiet, x & y, token, fuzzy matching, follow focus, tab nav, filter and full mouse support.
+Added an option to set the screen on which dmenu appears.
+Also allows to dim screen with selected color and opacity while dmenux is running.
+
+
+Requirements
+------------
+In order to build dmenux you need the Xlib header files.
+
+
+Installation
+------------
+Edit config.mk to match your local setup (dmenux is installed into
+the /usr/local namespace by default).
+
+Afterwards enter the following command to build and install dmenux
+(if necessary as root):
+
+    make clean install
+
+
+Running dmenux
+-------------
+See the man page for details.
