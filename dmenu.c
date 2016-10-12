@@ -480,6 +480,7 @@ keypress(XKeyEvent *ev) {
 	case XK_Escape:
         ret = EXIT_FAILURE;
         running = False;
+        break;
 	case XK_Home:
 		if(sel == matches) {
 			cursor = 0;
@@ -528,6 +529,7 @@ keypress(XKeyEvent *ev) {
  		}
 		ret = EXIT_SUCCESS;
 		running = False;
+        break;
 	case XK_Right:
 		if(text[cursor] != '\0') {
 			cursor = nextrune(+1);
