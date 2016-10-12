@@ -150,7 +150,7 @@ main(int argc, char *argv[]) {
 		else if (!strcmp(argv[i], "-o"))  /* opacity */
 			opacity = atof(argv[++i]);
 		else if (!strcmp(argv[i], "-dim"))  /* dim opacity */
-			dimopacity = atof(argv[++i]);	
+			dimopacity = atof(argv[++i]);
 		else if (!strcmp(argv[i], "-dc")) /* dim color */
 			dimcolor = argv[++i];
 		else if(!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
@@ -318,7 +318,7 @@ drawmenu(void) {
 	if((curpos = textnw(dc, maskin ? maskinput : text, length) + dc->font.height/2) < dc->w)
 		drawrect(dc, curpos, (dc->h - dc->font.height)/2 + 1, 1, dc->font.height -1, True, normcol->FG);
 
-    if(!quiet || strlen(text) > 0) {    
+    if(!quiet || strlen(text) > 0) {
         if(lines > 0) {
             /* draw vertical list */
             dc->w = mw - dc->x;
@@ -581,7 +581,7 @@ keypress(XKeyEvent *ev) {
 				cursor = strlen(text);
 				match();
 			}
-		} 
+		}
 		break;
 	}
 	drawmenu();
@@ -665,7 +665,7 @@ void
 buttonpress(XEvent *e) {
 	int curpos;
 	Item *item;
-	XButtonPressedEvent *ev = &e->xbutton;	
+	XButtonPressedEvent *ev = &e->xbutton;
 
 	if(ev->window != win)
 		exit(EXIT_FAILURE);
@@ -823,7 +823,7 @@ matchtok(void) {
 	char buf[sizeof text];
 	char **tokv, *s;
 	int tokc, i;
-	Item *item, *end;
+	Item *item;
 
 	tokc = 0;
 	tokv = NULL;
@@ -832,13 +832,13 @@ matchtok(void) {
 		if(!(tokv = realloc(tokv, ++tokc * sizeof *tokv)))
 			eprintf("cannot realloc %u bytes\n", tokc * sizeof *tokv);
 
-	matches = end = NULL;
+	matches = matchend = NULL;
 	for(item = items; item->text; item++) {
 		for(i = 0; i < tokc; i++)
 			if(!fstrstr(item->text, tokv[i]))
 				break;
 		if(i == tokc)
-			appenditem(item, &matches, &end);
+			appenditem(item, &matches, &matchend);
 	}
 	free(tokv);
 	curr = prev = next = sel = matches;
@@ -851,7 +851,7 @@ matchfuzzy(void) {
 	size_t len;
 	Item *item;
 	char *pos;
-	
+
 	len = strlen(text);
 	matches = matchend = NULL;
 	for(item = items; item && item->text; item++) {
@@ -994,7 +994,7 @@ setup(void) {
 			x = info[snum].x_org;
 			y = info[snum].y_org + (topbar ? yoffset : info[i].height - mh - yoffset);
 			mw = info[snum].width;
-			
+
 			dimx = info[snum].x_org;
 			dimy = info[snum].y_org;
 			dimw = info[snum].width;
@@ -1039,10 +1039,10 @@ setup(void) {
 		x = 0;
 		y = topbar ? 0 : DisplayHeight(dc->dpy, screen) - mh - yoffset;
 		mw = DisplayWidth(dc->dpy, screen);
-		
+
 		dimx = 0;
 		dimy = 0;
-		dimw = WidthOfScreen(defScreen); 
+		dimw = WidthOfScreen(defScreen);
 		dimh = HeightOfScreen(defScreen);
 	}
 
@@ -1051,9 +1051,9 @@ setup(void) {
 	promptw = (prompt && *prompt) ? textw(dc, prompt) : 0;
 	inputw = MIN(inputw, mw/3);
 	match();
-	
+
 	swa.override_redirect = True;
-	
+
 	/* create dim window */
 	if(dimopacity > 0) {
 		swa.background_pixel = dimcol->BG;
@@ -1064,16 +1064,16 @@ setup(void) {
 	                    CWOverrideRedirect | CWBackPixel | CWEventMask, &swa);
 		XClassHint dimhint = { .res_name = dimname, .res_class = class };
   	XSetClassHint(dc->dpy, dim, &dimhint);
-  
+
 		dimopacity = MIN(MAX(dimopacity, 0), 1);
   	unsigned int dimopacity_set = (unsigned int)(dimopacity * OPAQUE);
   	XChangeProperty(dc->dpy, dim, XInternAtom(dc->dpy, OPACITY, False),
 											XA_CARDINAL, 32, PropModeReplace,
 											(unsigned char *) &dimopacity_set, 1L);
-	
+
 		XMapRaised(dc->dpy, dim);
 	}
-	
+
 	/* create menu window */
 	swa.background_pixel = normcol->BG;
 	swa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask | ButtonPressMask | PointerMotionMask;
@@ -1089,7 +1089,7 @@ setup(void) {
   XChangeProperty(dc->dpy, win, XInternAtom(dc->dpy, OPACITY, False),
 											XA_CARDINAL, 32, PropModeReplace,
 											(unsigned char *) &opacity_set, 1L);
-	
+
 	/* open input methods */
 	xim = XOpenIM(dc->dpy, NULL, NULL, NULL);
 	xic = XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
