@@ -51,7 +51,6 @@ static void setup(void);
 static void usage(void);
 static void read_resourses(void);
 static char text[BUFSIZ] = "";
-static char originaltext[BUFSIZ] = "";
 static int bh, mw, mh;
 static int inputw, promptw;
 static size_t cursor = 0;
@@ -545,46 +544,17 @@ keypress(XKeyEvent *ev) {
 		}
 		break;
 	case XK_Tab:
-		if(!sel)
-			return;
-		if(strcmp(text, sel->text)) {
-			strncpy(originaltext, text, sizeof originaltext);
-			strncpy(text, sel->text, sizeof text);
-			cursor = strlen(text);
-		} else {
-			if(sel && sel->right) {
-				sel = sel->right;
-				strncpy(text, sel->text, sizeof text);
-				cursor = strlen(text);
-			}
-			else {
-				strncpy(text, originaltext, sizeof text);
-				cursor = strlen(text);
-				match();
-			}
-		}
-		break;
+        if(sel && sel->right && (sel = sel->right) == next) {
+            curr = next;
+            calcoffsets();
+        }
+        break;
 	case XK_ISO_Left_Tab:
-		if(!sel)
-			return;
-		if(strcmp(text, sel->text)) {
-			sel = matchend;
-			strncpy(originaltext, text, sizeof originaltext);
-			strncpy(text, sel->text, sizeof text);
-			cursor = strlen(text);
-		} else {
-			if(sel && sel->left) {
-				sel = sel->left;
-				strncpy(text, sel->text, sizeof text);
-				cursor = strlen(text);
-			}
-			else {
-				strncpy(text, originaltext, sizeof text);
-				cursor = strlen(text);
-				match();
-			}
-		}
-		break;
+        if(sel && sel->left && (sel = sel->left)->right == curr) {
+              curr = prev;
+              calcoffsets();
+          }
+          break;
 	}
 	drawmenu();
 }
