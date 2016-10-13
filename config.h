@@ -5,11 +5,9 @@ static Bool topbar = 1;                     /* -b  option; if 0, dmenu appears a
 /* -fn option overrides fonts[0]; default X11 font or font set */
 static const char *font = "monospace:size=11";
 static const char *prompt      = NULL;      /* -p  option; prompt to the elft of input field */
-static const char *normbgcolor = "#2B2C2B"; /* -nb option; normal background                 */
-static const char *normfgcolor = "#F9FAF9"; /* -nf option; normal foreground                 */
-static const char *selbgcolor  = "#16A085"; /* -sb option; selected background               */
-static const char *selfgcolor  = "#F9FAF9"; /* -sf option; selected foreground               */
-static const char *dimcolor = "#000000"; 
+static const char *normbgcolor = "#222222"; /* -nb option; normal background                 */
+static const char *normfgcolor = "#bbbbbb"; /* -nf option; normal foreground                 */
+static const char *selbgcolor  = "#005577"; /* -sb option; selected background               */
+static const char *selfgcolor  = "#eeeeee"; /* -sf option; selected foreground               */
+static const char *dimcolor = "#000000";
 static double opacity = 1.0, dimopacity = 0.0;
-
-
