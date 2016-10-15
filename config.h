@@ -13,4 +13,4 @@ static const char *normfgcolor = "#bbbbbb"; /* -nf option; normal foreground    
 static const char *selbgcolor  = "#005577"; /* -sb option; selected background               */
 static const char *selfgcolor  = "#eeeeee"; /* -sf option; selected foreground               */
 static const char *dimcolor = "#000000";
-static double opacity = 1.0, dimopacity = 0.0;
+static double opacity = 1.0, dimopacity = 0.0; /* Opacity windows. (0.1 - 1.0) */

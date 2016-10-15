@@ -57,9 +57,8 @@ static size_t cursor = 0;
 
 #include "config.h"
 
+static char *class = (char) 0;
 static char *name = "dmenu";
-static char *class = "Dmenu";
-static char *dimname = "dimenu";
 static unsigned int lines = 0, line_height = 0;
 static int xoffset = 0;
 static int yoffset = 0;
@@ -137,8 +136,6 @@ int main(int argc, char *argv[]) {
         } else if(!strcmp(argv[i], "-s")) {  /* screen number for dmenu to appear in */
             snum = atoi(argv[++i]);
         #endif
-        } else if(!strcmp(argv[i], "-name")) {  /* dmenu window name */
-            name = argv[++i];
         } else if(!strcmp(argv[i], "-class")) {  /* dmenu window class */
             class = argv[++i];
         } else if(!strcmp(argv[i], "-o")) {  /* opacity */
@@ -1030,8 +1027,11 @@ void setup(void) {
                             DefaultVisual(dc->dpy, screen),
                             CWOverrideRedirect | CWBackPixel | CWEventMask, &swa);
 
-        XClassHint dimhint = { .res_name = dimname, .res_class = class };
-        XSetClassHint(dc->dpy, dim, &dimhint);
+        /* set window properties */
+        if (dim) {
+            XClassHint dimhint = { name, class };
+            XSetClassHint(dc->dpy, dim, &dimhint);
+        }
 
         dimopacity = MIN(MAX(dimopacity, 0), 1);
         unsigned int dimopacity_set = (unsigned int)(dimopacity * OPAQUE);
@@ -1048,8 +1048,12 @@ void setup(void) {
                         DefaultDepth(dc->dpy, screen), CopyFromParent,
                         DefaultVisual(dc->dpy, screen),
                         CWOverrideRedirect | CWBackPixel | CWEventMask, &swa);
-    XClassHint hint = { .res_name = name, .res_class = class };
-    XSetClassHint(dc->dpy, win, &hint);
+
+    /* set window properties */
+    if (win) {
+        XClassHint hint = { name, class };
+        XSetClassHint(dc->dpy, win, &hint);
+    }
 
     opacity = MIN(MAX(opacity, 0), 1);
     unsigned int opacity_set = (unsigned int)(opacity * OPAQUE);
@@ -1069,7 +1073,7 @@ void setup(void) {
 
 void usage(void) {
     fputs("usage: dmenu [-b] [-q] [-f] [-r] [-i] [-z] [-t] [-mask] [-noinput]\n"
-          "             [-s screen] [-name name] [-class class] [ -o opacity]\n"
+          "             [-s screen] [-class class] [ -o opacity]\n"
           "             [-dim opcity] [-dc color] [-l lines] [-p prompt] [-fn font]\n"
           "             [-x xoffset] [-y yoffset] [-h height] [-w width]\n"
           "             [-nb color] [-nf color] [-sb color] [-sf color] [-v]\n", stderr);

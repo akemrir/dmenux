@@ -13,15 +13,13 @@ dmenu \- dynamic menu
 .RB [ \-noinput ]
 .RB [ \-s
 .IR screen ]
-.RB [ \-name
-.IR name ]
 .RB [ \-class
 .IR class ]
 .RB [ \-o
 .IR opacity ]
 .RB [ \-dim
 .IR opacity ]
-.RB [ \-dc 
+.RB [ \-dc
 .IR color ]
 .RB [ \-l
 .IR lines ]
@@ -67,11 +65,11 @@ dmenu will not show any items if the search string is empty.
 dmenu grabs the keyboard before reading stdin.  This is faster, but will lock up
 X until stdin reaches end\-of\-file.
 .TP
-.B \-r 
+.B \-r
 activates filter mode. All matching items currently shown in the list will be
 selected, starting with the item that is highlighted and wrapping around to the
-beginning of the list. 
-.TP 
+beginning of the list.
+.TP
 .B \-i
 dmenu matches menu items case insensitively.
 .TP
@@ -93,9 +91,6 @@ dmenu ignores input from stdin (equivalent to: echo | dmenu).
 .BI \-s " screen"
 dmenu apears on the specified screen number. Number given corespondes to screen number in X configuration.
 .TP
-.BI \-name " name"
-defines window name for dmenu. Defaults to "dmenu".
-.TP
 .BI \-class " class"
 defines window class for dmenu. Defaults to "Dmenu".
 .TP
@@ -104,7 +99,7 @@ defines window opacity for dmenu. Defaults to 1.0.
 .TP
 .BI \-dim " opacity"
 enables screen dimming when dmenu appers. Takes dim opacity as argument.
-.TP 
+.TP
 .BI \-dc " color"
 defines color of screen dimming. Active only when -dim in effect. Defautls to black (#000000)
 .TP
