@@ -11,43 +11,43 @@
 #define MAX(a, b)  ((a) > (b) ? (a) : (b))
 #define MIN(a, b)  ((a) < (b) ? (a) : (b))
 
-void
-drawrect(DC *dc, int x, int y, unsigned int w, unsigned int h, Bool fill, unsigned long color) {
+void drawrect(DC *dc, int x, int y, unsigned int w, unsigned int h, Bool fill, unsigned long color) {
 	XSetForeground(dc->dpy, dc->gc, color);
-	if(fill)
+	if(fill) {
 		XFillRectangle(dc->dpy, dc->canvas, dc->gc, dc->x + x, dc->y + y, w, h);
-	else
+	} else {
 		XDrawRectangle(dc->dpy, dc->canvas, dc->gc, dc->x + x, dc->y + y, w-1, h-1);
+	}
 }
 
-void
-drawtext(DC *dc, const char *text, ColorSet *col) {
+void drawtext(DC *dc, const char *text, ColorSet *col) {
 	char buf[BUFSIZ];
 	size_t mn, n = strlen(text);
 
 	/* shorten text if necessary */
-	for(mn = MIN(n, sizeof buf); textnw(dc, text, mn) + dc->font.height/2 > dc->w; mn--)
-		if(mn == 0)
-			return;
+	for(mn = MIN(n, sizeof buf); textnw(dc, text, mn) + dc->font.height/2 > dc->w; mn--) {
+		if(mn == 0) return;
+	}
 	memcpy(buf, text, mn);
-	if(mn < n)
+	if(mn < n) {
 		for(n = MAX(mn-3, 0); n < mn; buf[n++] = '.');
+	}
 
 	drawrect(dc, 0, 0, dc->w, dc->h, True, col->BG);
 	drawtextn(dc, buf, mn, col);
 }
 
-void
-drawtextn(DC *dc, const char *text, size_t n, ColorSet *col) {
+void drawtextn(DC *dc, const char *text, size_t n, ColorSet *col) {
 	int x = dc->x + dc->font.height/2;
 	int y = dc->y + dc->font.ascent + (dc->h - dc->font.height)/2;
 
 	XSetForeground(dc->dpy, dc->gc, col->FG);
 	if(dc->font.xft_font) {
-		if (!dc->xftdraw)
+		if (!dc->xftdraw) {
 			eprintf("error, xft drawable does not exist");
+		}
 		XftDrawStringUtf8(dc->xftdraw, &col->FG_xft,
-			dc->font.xft_font, x, y, (unsigned char*)text, n);
+			              dc->font.xft_font, x, y, (unsigned char*)text, n);
 	} else if(dc->font.set) {
 		XmbDrawString(dc->dpy, dc->canvas, dc->font.set, dc->gc, x, y, text, n);
 	} else {
@@ -56,10 +56,8 @@ drawtextn(DC *dc, const char *text, size_t n, ColorSet *col) {
 	}
 }
 
-void
-eprintf(const char *fmt, ...) {
+void eprintf(const char *fmt, ...) {
 	va_list ap;
-
 	va_start(ap, fmt);
 	vfprintf(stderr, fmt, ap);
 	va_end(ap);
@@ -71,78 +69,84 @@ eprintf(const char *fmt, ...) {
 	exit(EXIT_FAILURE);
 }
 
-void
-freecol(DC *dc, ColorSet *col) {
+void freecol(DC *dc, ColorSet *col) {
     if(col) {
-        if(&col->FG_xft)
-            XftColorFree(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
-                DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), &col->FG_xft);
-        free(col); 
+		XftColorFree(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
+		             DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), &col->FG_xft);
+    	free(col);
     }
 }
 
-void
-freedc(DC *dc) {
+void freedc(DC *dc) {
     if(dc->font.xft_font) {
         XftFontClose(dc->dpy, dc->font.xft_font);
         XftDrawDestroy(dc->xftdraw);
     }
-	if(dc->font.set)
+	if(dc->font.set) {
 		XFreeFontSet(dc->dpy, dc->font.set);
-    if(dc->font.xfont)
+	}
+    if(dc->font.xfont) {
 		XFreeFont(dc->dpy, dc->font.xfont);
-    if(dc->canvas)
+	}
+    if(dc->canvas) {
 		XFreePixmap(dc->dpy, dc->canvas);
-	if(dc->gc)
-        XFreeGC(dc->dpy, dc->gc);
-	if(dc->dpy)
-        XCloseDisplay(dc->dpy);
-	if(dc)
-        free(dc);
+	}
+	if(dc->gc) {
+		XFreeGC(dc->dpy, dc->gc);
+	}
+	if(dc->dpy) {
+		XCloseDisplay(dc->dpy);
+	}
+	if(dc) {
+		free(dc);
+	}
 }
 
-unsigned long
-getcolor(DC *dc, const char *colstr) {
+unsigned long getcolor(DC *dc, const char *colstr) {
 	Colormap cmap = DefaultColormap(dc->dpy, DefaultScreen(dc->dpy));
 	XColor color;
 
-	if(!XAllocNamedColor(dc->dpy, cmap, colstr, &color, &color))
+	if(!XAllocNamedColor(dc->dpy, cmap, colstr, &color, &color)) {
 		eprintf("cannot allocate color '%s'\n", colstr);
+	}
 	return color.pixel;
 }
 
-ColorSet *
-initcolor(DC *dc, const char * foreground, const char * background) {
+ColorSet * initcolor(DC *dc, const char * foreground, const char * background) {
 	ColorSet * col = (ColorSet *)malloc(sizeof(ColorSet));
-	if(!col)
+	if(!col) {
 		eprintf("error, cannot allocate memory for color set");
+	}
 	col->BG = getcolor(dc, background);
 	col->FG = getcolor(dc, foreground);
-	if(dc->font.xft_font)
+	if(dc->font.xft_font) {
 		if(!XftColorAllocName(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
-			DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), foreground, &col->FG_xft))
-			eprintf("error, cannot allocate xft font color '%s'\n", foreground);
+		   DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), foreground, &col->FG_xft)) {
+				eprintf("error, cannot allocate xft font color '%s'\n", foreground);
+		}
+	}
 	return col;
 }
 
-DC *
-initdc(void) {
+DC *initdc(void) {
 	DC *dc;
 
-	if(!setlocale(LC_CTYPE, "") || !XSupportsLocale())
+	if(!setlocale(LC_CTYPE, "") || !XSupportsLocale()) {
 		fputs("no locale support\n", stderr);
-	if(!(dc = calloc(1, sizeof *dc)))
+	}
+	if(!(dc = calloc(1, sizeof *dc))) {
 		eprintf("cannot malloc %u bytes:", sizeof *dc);
-	if(!(dc->dpy = XOpenDisplay(NULL)))
+	}
+	if(!(dc->dpy = XOpenDisplay(NULL))) {
 		eprintf("cannot open display\n");
+	}
 
 	dc->gc = XCreateGC(dc->dpy, DefaultRootWindow(dc->dpy), 0, NULL);
 	XSetLineAttributes(dc->dpy, dc->gc, 1, LineSolid, CapButt, JoinMiter);
 	return dc;
 }
 
-void
-initfont(DC *dc, const char *fontstr) {
+void initfont(DC *dc, const char *fontstr) {
 	char *def, **missing, **names;
 	int i, n;
 	XFontStruct **xfonts;
@@ -166,22 +170,22 @@ initfont(DC *dc, const char *fontstr) {
 	} else {
 		eprintf("cannot load font '%s'\n", fontstr);
 	}
-	if(missing)
+	if(missing) {
 		XFreeStringList(missing);
+	}
 	dc->font.height = dc->font.ascent + dc->font.descent;
 	return;
 }
 
-void
-mapdc(DC *dc, Window win, unsigned int w, unsigned int h) {
+void mapdc(DC *dc, Window win, unsigned int w, unsigned int h) {
 	XCopyArea(dc->dpy, dc->canvas, win, dc->gc, 0, 0, w, h, 0, 0);
 }
 
-void
-resizedc(DC *dc, unsigned int w, unsigned int h) {
+void resizedc(DC *dc, unsigned int w, unsigned int h) {
 	int screen = DefaultScreen(dc->dpy);
-	if(dc->canvas)
+	if(dc->canvas) {
 		XFreePixmap(dc->dpy, dc->canvas);
+	}
 
 	dc->w = w;
 	dc->h = h;
@@ -189,13 +193,13 @@ resizedc(DC *dc, unsigned int w, unsigned int h) {
 	                           DefaultDepth(dc->dpy, screen));
 	if(dc->font.xft_font && !(dc->xftdraw)) {
 		dc->xftdraw = XftDrawCreate(dc->dpy, dc->canvas, DefaultVisual(dc->dpy,screen), DefaultColormap(dc->dpy,screen));
-		if(!(dc->xftdraw))
+		if(!(dc->xftdraw)) {
 			eprintf("error, cannot create xft drawable\n");
+		}
 	}
 }
 
-int
-textnw(DC *dc, const char *text, size_t len) {
+int textnw(DC *dc, const char *text, size_t len) {
 	if(dc->font.xft_font) {
 		XGlyphInfo gi;
 		XftTextExtentsUtf8(dc->dpy, dc->font.xft_font, (const FcChar8*)text, len, &gi);
@@ -208,7 +212,6 @@ textnw(DC *dc, const char *text, size_t len) {
 	return XTextWidth(dc->font.xfont, text, len);
 }
 
-int
-textw(DC *dc, const char *text) {
+int textw(DC *dc, const char *text) {
 	return textnw(dc, text, strlen(text)) + dc->font.height;
 }
