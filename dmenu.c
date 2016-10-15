@@ -1074,7 +1074,7 @@ void setup(void) {
 void usage(void) {
     fputs("usage: dmenu [-b] [-q] [-f] [-r] [-i] [-z] [-t] [-mask] [-noinput]\n"
           "             [-s screen] [-class class] [ -o opacity]\n"
-          "             [-dim opcity] [-dc color] [-l lines] [-p prompt] [-fn font]\n"
+          "             [-dim opacity] [-dc color] [-l lines] [-p prompt] [-fn font]\n"
           "             [-x xoffset] [-y yoffset] [-h height] [-w width]\n"
           "             [-nb color] [-nf color] [-sb color] [-sf color] [-v]\n", stderr);
     exit(EXIT_FAILURE);
