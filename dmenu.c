@@ -57,7 +57,7 @@ static size_t cursor = 0;
 
 #include "config.h"
 
-static char *class = (char) 0;
+static char *class = "\0";
 static char *name = "dmenu";
 static unsigned int lines = 0, line_height = 0;
 static int xoffset = 0;
